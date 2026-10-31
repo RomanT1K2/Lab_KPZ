@@ -1,54 +1,17 @@
-# Compiled class files
-*.class
+# --- VS Code ---
+.vscode/
 
-# Log files
+# --- Java / Compiled files ---
+*.class
 *.log
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
-
-# Virtual machine crash logs
-hs_err_pid*
-
-# Build output
-build/
+# --- Build directories ---
+bin/
 out/
+build/
 target/
 
-# Gradle / Maven
-.gradle/
-.gradle-cache/
-.mvn/
-
-# IDE files
-.idea/
-.vscode/
-*.iml
-*.ipr
-*.iws
-
-# Eclipse
-.classpath
-.project
-.settings/
-
-# NetBeans
-nbproject/private/
-nbbuild/
-nbdist/
-
-# OS files
+# --- OS generated files ---
 .DS_Store
 Thumbs.db
+desktop.ini
