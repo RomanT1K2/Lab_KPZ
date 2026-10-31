@@ -1,0 +1,16 @@
+Dependency Inversion Principle: високорівневі модулі не повинні залежати від низькорівневих модулів. Обидва повинні залежати від абстракцій.
+
+У цій роботі ми дотримуємося DIP, використовуючи Constructor Injection.
+
+Як виглядає залежність між класами:
+Composition Root — Main.java 
+InventoryStockManager це Високорівнева бізнес-логіка
+Залежить від абстракцій:  (Високорівнева бізнес-логіка)  InventoryStockManager
+ (інтерфейсів)      InventoryRepository          і  WarehouseBeacon             і StockEventLogger
+ (класів)           MongoInventoryRepository       MqttWarehouseBeaconClient    JsonFileReportLogger
+                    MockInventoryRepository
+
+
+
+
+ У цій роботі ми дотримуємося DIP, використовуючи Constructor Injection.

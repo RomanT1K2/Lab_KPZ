@@ -1,0 +1,4 @@
+Порушення LSP (Liskov Substitution Principle) тобто об’єкти дочірнього класу повинні без проблем замінювати об’єкти базового класу 
+
+Спільна абстракція: Account.java це Спільний контракт; UserAccount.java і SystemServiceAccount.java є implements Account
+Спеціалізована можливість: PasswordResettable.java; і UserAccount.java implements PasswordResettable
