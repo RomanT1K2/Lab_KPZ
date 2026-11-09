@@ -1,0 +1,66 @@
+@startuml
+title Завдання 3. Prototype — пакети проживання
+skinparam classAttributeIconSize 0
+
+interface PackagePrototype <<Prototype>> {
+  + copy() : PackagePrototype
+}
+
+class StayPackage <<Concrete Prototype>> {
+  - name : String
+  - guestName : String
+  - meals : String
+  - transfer : String
+  - spaProcedures : List<SpaProcedure>
+  - skiPass : SkiPass
+  - discounts : List<Discount>
+  + StayPackage(name : String, meals : String, transfer : String, skiPass : SkiPass)
+  - StayPackage(other : StayPackage)
+  + copy() : StayPackage
+  + setGuestName(guestName : String) : void
+  + getSpaProcedures() : List<SpaProcedure>
+  + getSkiPass() : SkiPass
+  + getDiscounts() : List<Discount>
+  + describe(title : String) : List<String>
+}
+
+class SpaProcedure <<Nested Object>> {
+  - name : String
+  - minutes : int
+  + SpaProcedure(name : String, minutes : int)
+  + SpaProcedure(other : SpaProcedure)
+}
+
+class SkiPass <<Nested Object>> {
+  - days : int
+  - zone : String
+  + SkiPass(days : int, zone : String)
+  + SkiPass(other : SkiPass)
+  + setDays(days : int) : void
+}
+
+class Discount <<Nested Object>> {
+  - title : String
+  - percent : int
+  + Discount(title : String, percent : int)
+  + Discount(other : Discount)
+  + setPercent(percent : int) : void
+}
+
+class Main <<Client>> {
+  - {static} runPackagesScenario() : void
+}
+
+PackagePrototype <|.. StayPackage
+StayPackage *-- "0..*" SpaProcedure : spaProcedures
+StayPackage *-- "1" SkiPass : skiPass
+StayPackage *-- "0..*" Discount : discounts
+Main ..> PackagePrototype : copy()
+Main ..> StayPackage
+
+note bottom of StayPackage
+  copy() створює глибоку копію: вкладені об'єкти
+  теж копіюються (копіювальні конструктори),
+  дороге налаштування не повторюється.
+end note
+@enduml

@@ -1,0 +1,52 @@
+@startuml
+title Завдання 2. Singleton — служба розрахунків
+skinparam classAttributeIconSize 0
+
+class BillingService <<Singleton>> {
+  - {static} instance : BillingService
+  - serviceId : int
+  - accounts : Map<Integer, List<Charge>>
+  - BillingService()
+  + {static} getInstance() : BillingService
+  + addCharge(room : int, charge : Charge) : void
+  + getCharges(room : int) : List<Charge>
+  + getTotal(room : int) : double
+  + getServiceId() : int
+}
+
+class Charge <<Entity>> {
+  - department : String
+  - description : String
+  - amount : double
+  + Charge(department : String, description : String, amount : double)
+  + getDepartment() : String
+  + getDescription() : String
+  + getAmount() : double
+}
+
+class Department <<Client>> {
+  - name : String
+  - billing : BillingService
+  + Department(name : String)
+  + charge(room : int, description : String, amount : double) : void
+  + issueFinalBill(room : int) : void
+  + getBillingId() : int
+}
+
+class Logger <<Utility>> {
+  + {static} log(source : String, event : String) : void
+}
+
+BillingService --> "1" BillingService : instance
+BillingService *-- "0..*" Charge : accounts
+Department "4" --> "1" BillingService : billing
+Department ..> BillingService : <<call>> getInstance()
+Department ..> Charge : <<create>>
+BillingService ..> Logger
+
+note right of BillingService
+  Конструктор приватний, тому new BillingService()
+  поза класом неможливий. Єдиний екземпляр
+  створюється в getInstance().
+end note
+@enduml

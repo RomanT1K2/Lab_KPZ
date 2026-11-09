@@ -1,0 +1,58 @@
+@startuml
+title Завдання 1. Object Pool — видача ключ-карт
+skinparam classAttributeIconSize 0
+
+class Reception <<Client>> {
+  - {static} SOURCE : String
+  - pool : KeyCardPool
+  - mechanicalKeysIssued : int
+  + Reception(pool : KeyCardPool)
+  + checkIn(guest : String, room : int) : KeyCard
+  + checkOut(guest : String, room : int, card : KeyCard) : void
+  + tryOpenDoor(card : KeyCard, room : int) : void
+  + getMechanicalKeysIssued() : int
+}
+
+class KeyCardPool <<Object Pool>> {
+  - {static} SOURCE : String
+  - allCards : List<KeyCard>
+  - freeCards : Queue<KeyCard>
+  + KeyCardPool(size : int)
+  + acquire(room : int, validUntil : String) : KeyCard
+  + release(card : KeyCard) : void
+  + printStatistics() : void
+}
+
+class KeyCard <<Pooled Object>> {
+  - {static} NO_ROOM : int
+  - id : String
+  - roomNumber : int
+  - validUntil : String
+  - issueCount : int
+  + KeyCard(id : String)
+  + program(roomNumber : int, validUntil : String) : void
+  + erase() : int
+  + opens(room : int) : boolean
+  + getId() : String
+  + getIssueCount() : int
+}
+
+class Logger <<Utility>> {
+  - {static} minutes : int
+  + {static} log(source : String, event : String) : void
+  + {static} pause(millis : int) : void
+}
+
+Reception o-- "1" KeyCardPool : pool
+KeyCardPool *-- "5" KeyCard : allCards
+KeyCardPool o-- "0..5" KeyCard : freeCards
+Reception ..> KeyCard : використовує
+KeyCardPool ..> Logger
+Reception ..> Logger
+
+note right of KeyCardPool
+  Pool створює всі 5 карт один раз.
+  acquire() видає вільну карту, release()
+  стирає доступ і повертає її в пул.
+end note
+@enduml
