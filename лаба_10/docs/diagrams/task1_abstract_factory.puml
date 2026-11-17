@@ -1,0 +1,114 @@
+@startuml task1_abstract_factory
+title Завдання 1 — Abstract Factory: підготовка номера за категорією
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 60
+
+package "hotel.housekeeping" {
+
+  class HousekeepingService <<Client>> {
+    - {static} SRC : String
+    + prepare(room : Room, factory : RoomKitFactory) : RoomKit
+  }
+
+  interface RoomKitFactory <<Abstract Factory>> {
+    + category() : String
+    + createCosmetics() : Cosmetics
+    + createMinibar() : Minibar
+    + createTextile() : Textile
+  }
+
+  class StandardKitFactory <<Concrete Factory>> {
+    - {static} CATEGORY : String
+  }
+  class LuxuryKitFactory <<Concrete Factory>> {
+    - {static} CATEGORY : String
+  }
+  class FamilyKitFactory <<Concrete Factory>> {
+    - {static} CATEGORY : String
+  }
+  class ChaletKitFactory <<Concrete Factory>> {
+    - {static} CATEGORY : String
+  }
+  note bottom of ChaletKitFactory
+    Нова категорія «шале»:
+    додається лише новим класом,
+    HousekeepingService не змінюється
+  end note
+
+  interface RoomItem {
+    + category() : String
+    + describe() : String
+  }
+  interface Cosmetics <<Abstract Product>>
+  interface Minibar <<Abstract Product>> {
+    + price() : double
+  }
+  interface Textile <<Abstract Product>>
+
+  class "Standard*\n(Cosmetics, Minibar, Textile)" as StdProducts <<Concrete Product>>
+  class "Luxury*\n(Cosmetics, Minibar, Textile)" as LuxProducts <<Concrete Product>>
+  class "Family*\n(Cosmetics, Minibar, Textile)" as FamProducts <<Concrete Product>>
+  class "Chalet*\n(Cosmetics, Minibar, Textile)" as ChaProducts <<Concrete Product>>
+
+  class RoomKit {
+    - category : String
+    - cosmetics : Cosmetics
+    - minibar : Minibar
+    - textile : Textile
+    + category() : String
+    + cosmetics() : Cosmetics
+    + minibar() : Minibar
+    + textile() : Textile
+  }
+
+  class Room {
+    - number : String
+    - category : String
+    - kit : RoomKit
+    + number() : String
+    + category() : String
+    + kit() : RoomKit
+    ~ assign(kit : RoomKit) : void
+  }
+}
+
+RoomKitFactory <|.. StandardKitFactory
+RoomKitFactory <|.. LuxuryKitFactory
+RoomKitFactory <|.. FamilyKitFactory
+RoomKitFactory <|.. ChaletKitFactory
+
+RoomItem <|-- Cosmetics
+RoomItem <|-- Minibar
+RoomItem <|-- Textile
+
+Cosmetics <|.. StdProducts
+Minibar   <|.. StdProducts
+Textile   <|.. StdProducts
+Cosmetics <|.. LuxProducts
+Minibar   <|.. LuxProducts
+Textile   <|.. LuxProducts
+Cosmetics <|.. FamProducts
+Minibar   <|.. FamProducts
+Textile   <|.. FamProducts
+Cosmetics <|.. ChaProducts
+Minibar   <|.. ChaProducts
+Textile   <|.. ChaProducts
+
+StandardKitFactory ..> StdProducts : <<create>>
+LuxuryKitFactory   ..> LuxProducts : <<create>>
+FamilyKitFactory   ..> FamProducts : <<create>>
+ChaletKitFactory   ..> ChaProducts : <<create>>
+
+HousekeepingService ..> RoomKitFactory : uses
+HousekeepingService ..> Room
+HousekeepingService ..> RoomKit : <<create>>
+HousekeepingService ..> Cosmetics
+HousekeepingService ..> Minibar
+HousekeepingService ..> Textile
+
+RoomKit "1" o-- "1" Cosmetics
+RoomKit "1" o-- "1" Minibar
+RoomKit "1" o-- "1" Textile
+Room "1" --> "0..1" RoomKit : kit
+@enduml

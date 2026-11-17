@@ -1,0 +1,89 @@
+@startuml task2_builder
+title Завдання 2 — Builder: оформлення бронювання
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 60
+
+package "hotel.booking" {
+
+  class BookingDirector <<Director>> {
+    + weekend(builder : Booking.Builder, guest : Guest, friday : LocalDate) : Booking
+    + skiWeek(builder : Booking.Builder, guest : Guest, start : LocalDate) : Booking
+  }
+
+  class Booking <<Product>> {
+    - {static} counter : int
+    - id : int
+    - guest : Guest
+    - checkIn : LocalDate
+    - checkOut : LocalDate
+    - category : RoomCategory
+    - breakfast : boolean
+    - transfer : boolean
+    - lateCheckout : boolean
+    - babyCot : boolean
+    - comment : String
+    - Booking(b : Builder)
+    + {static} builder() : Builder
+    + id() : int
+    + guest() : Guest
+    + nights() : long
+    + toString() : String
+  }
+
+  class "Booking.Builder" as Builder <<Builder>> {
+    - guest : Guest
+    - checkIn : LocalDate
+    - checkOut : LocalDate
+    - category : RoomCategory
+    - breakfast : boolean
+    - transfer : boolean
+    - lateCheckout : boolean
+    - babyCot : boolean
+    - comment : String
+    - Builder()
+    + guest(g : Guest) : Builder
+    + checkIn(d : LocalDate) : Builder
+    + checkOut(d : LocalDate) : Builder
+    + category(c : RoomCategory) : Builder
+    + withBreakfast() : Builder
+    + withTransfer() : Builder
+    + withLateCheckout() : Builder
+    + withBabyCot() : Builder
+    + comment(text : String) : Builder
+    + build() : Booking
+  }
+  note right of Builder
+    build() — завершальний крок:
+    перевіряє гостя, категорію і дати;
+    при помилці кидає
+    BookingValidationException
+  end note
+
+  class Guest <<value object>> {
+    + name() : String
+    + contact() : String
+  }
+
+  enum RoomCategory {
+    STANDARD
+    LUXURY
+    FAMILY
+    + title() : String
+  }
+
+  class BookingValidationException <<Exception>> {
+    + BookingValidationException(message : String)
+  }
+}
+
+Booking +-- Builder : вкладений
+Builder ..> Booking : <<create>>
+Builder ..> BookingValidationException : <<throws>>
+BookingDirector ..> Builder : керує кроками
+BookingDirector ..> Booking : отримує
+Builder "1" --> "0..1" Guest
+Builder "1" --> "0..1" RoomCategory
+Booking "1" *-- "1" Guest
+Booking "1" --> "1" RoomCategory
+@enduml

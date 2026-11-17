@@ -1,0 +1,99 @@
+@startuml task3_factory_method
+title Завдання 3 — Factory Method: підтвердження бронювання
+skinparam classAttributeIconSize 0
+skinparam nodesep 40
+skinparam ranksep 60
+
+package "hotel.confirmation" {
+
+  abstract class ReservationChannel <<Creator>> {
+    - inventory : RoomInventory
+    # ReservationChannel(inventory : RoomInventory)
+    + {abstract} name() : String
+    # {abstract} createConfirmation(booking : Booking) : Confirmation
+    + confirm(booking : Booking) : boolean
+  }
+  note right of ReservationChannel
+    confirm() — final, шаблонний процес:
+    1) перевірити наявність
+    2) зафіксувати
+    3) createConfirmation()  ← Factory Method
+    4) send()
+  end note
+
+  class ReceptionChannel <<Concrete Creator>> {
+    + name() : String
+    # createConfirmation(booking : Booking) : Confirmation
+  }
+  class WebsiteChannel <<Concrete Creator>> {
+    + name() : String
+    # createConfirmation(booking : Booking) : Confirmation
+  }
+  class TourOperatorChannel <<Concrete Creator>> {
+    + name() : String
+    # createConfirmation(booking : Booking) : Confirmation
+  }
+  class OnlineBookingChannel <<Concrete Creator\n(новий канал)>> {
+    + name() : String
+    # createConfirmation(booking : Booking) : Confirmation
+  }
+
+  interface Confirmation <<Product>> {
+    + render() : String
+    + send() : void
+  }
+  class PrintedForm <<Concrete Product>> {
+    - booking : Booking
+    - source : String
+  }
+  class EmailConfirmation <<Concrete Product>> {
+    - booking : Booking
+    - source : String
+  }
+  class TourOperatorFile <<Concrete Product>> {
+    - booking : Booking
+    - source : String
+  }
+  class OnlineBookingConfirmation <<Concrete Product\n(новий канал)>> {
+    - booking : Booking
+    - source : String
+  }
+
+  class RoomInventory {
+    - free : Map<RoomCategory, Integer>
+    + RoomInventory(perCategory : int)
+    + isAvailable(c : RoomCategory) : boolean
+    + reserve(c : RoomCategory) : void
+    + left(c : RoomCategory) : int
+  }
+}
+
+package "hotel.booking" {
+  class Booking
+  enum RoomCategory
+}
+
+ReservationChannel <|-- ReceptionChannel
+ReservationChannel <|-- WebsiteChannel
+ReservationChannel <|-- TourOperatorChannel
+ReservationChannel <|-- OnlineBookingChannel
+
+Confirmation <|.. PrintedForm
+Confirmation <|.. EmailConfirmation
+Confirmation <|.. TourOperatorFile
+Confirmation <|.. OnlineBookingConfirmation
+
+ReceptionChannel     ..> PrintedForm : <<create>>
+WebsiteChannel       ..> EmailConfirmation : <<create>>
+TourOperatorChannel  ..> TourOperatorFile : <<create>>
+OnlineBookingChannel ..> OnlineBookingConfirmation : <<create>>
+
+ReservationChannel ..> Confirmation : <<uses>>
+ReservationChannel ..> Booking
+ReservationChannel "1" --> "1" RoomInventory : inventory
+RoomInventory ..> RoomCategory
+PrintedForm "1" --> "1" Booking
+EmailConfirmation "1" --> "1" Booking
+TourOperatorFile "1" --> "1" Booking
+OnlineBookingConfirmation "1" --> "1" Booking
+@enduml

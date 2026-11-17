@@ -1,0 +1,67 @@
+@startuml architecture
+title Архітектура файлів — лабораторна робота №10 (готель «Карпатські вершини»)
+skinparam componentStyle rectangle
+left to right direction
+
+package "src/hotel" {
+  component "Main.java\nраннер: 3 методи-ситуації" as Main
+
+  package "common" {
+    component "Log.java\nформат [час] [джерело] подія" as Log
+  }
+
+  package "housekeeping — Завдання 1, Abstract Factory" {
+    component "HousekeepingService.java" as HS
+    component "RoomKitFactory.java" as RKF
+    component "StandardKitFactory, LuxuryKitFactory,\nFamilyKitFactory .java" as KF
+    component "ChaletKitFactory.java\nдодано без змін служби" as CF
+    component "RoomItem, Cosmetics,\nMinibar, Textile .java" as Items
+    component "RoomKit.java, Room.java" as RK
+  }
+
+  package "booking — Завдання 2, Builder" {
+    component "Booking.java\nрозміщено Booking.Builder" as Booking
+    component "BookingDirector.java" as Dir
+    component "Guest, RoomCategory,\nBookingValidationException .java" as BV
+  }
+
+  package "confirmation — Завдання 3, Factory Method" {
+    component "ReservationChannel.java\nCreator" as RC
+    component "ReceptionChannel, WebsiteChannel,\nTourOperatorChannel .java" as Ch
+    component "OnlineBookingChannel.java\nновий канал" as OBC
+    component "Confirmation.java, PrintedForm,\nEmailConfirmation, TourOperatorFile,\nOnlineBookingConfirmation .java" as Conf
+    component "RoomInventory.java" as Inv
+  }
+}
+
+package "docs/diagrams — Завдання 4" {
+  component "task1_abstract_factory\n.puml .png .svg" as D1
+  component "task2_builder\n.puml .png .svg" as D2
+  component "task3_factory_method\n.puml .png .svg" as D3
+}
+
+Main --> HS
+Main --> Booking
+Main --> Dir
+Main --> RC
+Main --> Ch
+Main --> OBC
+HS --> RKF
+KF ..> RKF : implements
+CF ..> RKF : implements
+RKF --> Items
+HS --> RK
+Dir --> Booking
+Booking --> BV
+RC --> Conf
+RC --> Inv
+RC --> Booking
+Ch --|> RC
+OBC --|> RC
+HS --> Log
+Booking --> Log
+RC --> Log
+D1 .. HS
+D2 .. Booking
+D3 .. RC
+@enduml
