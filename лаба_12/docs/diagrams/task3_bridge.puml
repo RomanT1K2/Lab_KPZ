@@ -1,0 +1,70 @@
+@startuml task3_bridge
+title Завдання 3. Керування обладнанням номера - шаблон Bridge
+skinparam classAttributeIconSize 0
+
+abstract class ControlDevice <<Abstraction>> {
+  # equipment : Equipment
+  + ControlDevice(equipment : Equipment)
+  + setEquipment(equipment : Equipment) : void
+  # {abstract} getDeviceName() : String
+  # {abstract} describeSignal(command : String) : String
+  + turnOn() : void
+  + turnOff() : void
+}
+
+class WallPanel <<RefinedAbstraction>> {
+  # getDeviceName() : String
+  # describeSignal(command : String) : String
+}
+class RemoteController <<RefinedAbstraction>> {
+  # getDeviceName() : String
+  # describeSignal(command : String) : String
+}
+class MobileApp <<RefinedAbstraction>> {
+  # getDeviceName() : String
+  # describeSignal(command : String) : String
+}
+
+interface Equipment <<Implementor>> {
+  + getName() : String
+  + turnOn() : void
+  + turnOff() : void
+}
+
+class AirConditioner <<ConcreteImplementor>> {
+  + getName() : String
+  + turnOn() : void
+  + turnOff() : void
+}
+class Lighting <<ConcreteImplementor>> {
+  + getName() : String
+  + turnOn() : void
+  + turnOff() : void
+}
+class ElectricCurtains <<ConcreteImplementor>> {
+  + getName() : String
+  + turnOn() : void
+  + turnOff() : void
+}
+class FloorHeating <<ConcreteImplementor>> {
+  + getName() : String
+  + turnOn() : void
+  + turnOff() : void
+}
+
+ControlDevice <|-- WallPanel
+ControlDevice <|-- RemoteController
+ControlDevice <|-- MobileApp
+
+Equipment <|.. AirConditioner
+Equipment <|.. Lighting
+Equipment <|.. ElectricCurtains
+Equipment <|.. FloorHeating
+
+ControlDevice "*" o-- "1" Equipment : <<міст>> equipment
+
+note bottom of FloorHeating
+  Нове обладнання = 1 новий клас.
+  Пристрої керування не змінюються.
+end note
+@enduml

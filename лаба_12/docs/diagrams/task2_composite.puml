@@ -1,0 +1,45 @@
+@startuml task2_composite
+title Завдання 2. Склад пакетів проживання - шаблон Composite
+skinparam classAttributeIconSize 0
+
+interface ServiceComponent <<Component>> {
+  + getName() : String
+  + getPrice() : double
+  + getServiceNames() : List<String>
+  + print(indent : String) : void
+}
+
+class SingleService <<Leaf>> {
+  - name : String
+  - price : double
+  + getName() : String
+  + getPrice() : double
+  + getServiceNames() : List<String>
+  + print(indent : String) : void
+}
+
+class ServicePackage <<Composite>> {
+  - name : String
+  - children : List<ServiceComponent>
+  + add(component : ServiceComponent) : void
+  + getName() : String
+  + getPrice() : double
+  + getServiceNames() : List<String>
+  + print(indent : String) : void
+}
+
+class Main <<Client>> {
+  + {static} printCost(component : ServiceComponent) : void
+}
+
+ServiceComponent <|.. SingleService
+ServiceComponent <|.. ServicePackage
+ServicePackage "1" o-- "0..*" ServiceComponent : children
+Main ..> ServiceComponent : <<use>>
+
+note right of ServicePackage
+  getPrice() = сума getPrice()
+  усіх children (рекурсія).
+  Пакет може містити інший пакет.
+end note
+@enduml

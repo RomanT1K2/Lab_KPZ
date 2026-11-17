@@ -1,0 +1,66 @@
+@startuml task1_flyweight
+title Завдання 1. Календар зайнятості номерів - шаблон Flyweight
+skinparam classAttributeIconSize 0
+
+class OccupancyCalendar <<Client>> {
+  - {static} CATEGORY_NAMES : String[]
+  - entries : List<CalendarEntry>
+  + build(roomsCount : int, nights : int, startDate : LocalDate) : void
+  + getEntriesCount() : int
+  + find(roomNumber : int, date : LocalDate) : CalendarEntry
+}
+
+class CalendarEntry <<Context>> {
+  - roomNumber : int
+  - date : LocalDate
+  - status : RoomStatus
+  - category : RoomCategory
+  + getRoomNumber() : int
+  + getDate() : LocalDate
+  + getStatus() : RoomStatus
+  + setStatus(status : RoomStatus) : void
+  + getCategory() : RoomCategory
+}
+
+class RoomCategory <<Flyweight>> {
+  - name : String
+  - description : String
+  - area : double
+  - amenities : List<String>
+  - photos : List<String>
+  - basePrice : double
+  + getName() : String
+  + getArea() : double
+  + getBasePrice() : double
+  + getAmenities() : List<String>
+  + getPhotos() : List<String>
+}
+
+class RoomCategoryFactory <<FlyweightFactory>> {
+  - {static} cache : Map<String, RoomCategory>
+  + {static} getCategory(name : String) : RoomCategory
+  - {static} createCategory(name : String) : RoomCategory
+  + {static} getCreatedCount() : int
+}
+
+enum RoomStatus {
+  FREE
+  BOOKED
+  OCCUPIED
+}
+
+OccupancyCalendar "1" *-- "21900" CalendarEntry : entries
+CalendarEntry "*" o-- "1" RoomCategory : спільна категорія
+CalendarEntry ..> RoomStatus
+RoomCategoryFactory "1" o-- "4" RoomCategory : cache
+OccupancyCalendar ..> RoomCategoryFactory : <<use>>
+
+note right of RoomCategory
+  Внутрішній (спільний) стан:
+  зберігається ОДИН раз на категорію
+end note
+note bottom of CalendarEntry
+  Зовнішній (унікальний) стан:
+  номер, дата, статус
+end note
+@enduml
