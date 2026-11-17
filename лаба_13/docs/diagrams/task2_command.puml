@@ -1,0 +1,81 @@
+@startuml task2_command
+title Завдання 2. Command: нарахування послуг на рахунок гостя
+skinparam classAttributeIconSize 0
+
+interface Command <<Command>> {
+  +execute() : void
+  +undo() : void
+}
+
+abstract class ChargeCommand <<Concrete Command (base)>> {
+  -account : GuestAccount
+  -department : String
+  -description : String
+  -amount : double
+  -executed : boolean
+  -reversed : boolean
+  +ChargeCommand(account, department, description, amount)
+  +execute() : void
+  +undo() : void
+}
+
+class DinnerCharge <<ConcreteCommand>> {
+  +DinnerCharge(account : GuestAccount, amount : double)
+}
+class MassageCharge <<ConcreteCommand>> {
+  +MassageCharge(account : GuestAccount, amount : double)
+}
+class SkiRentalCharge <<ConcreteCommand>> {
+  +SkiRentalCharge(account : GuestAccount, amount : double)
+}
+
+class BillingService <<Invoker>> {
+  -executedCommands : List<Command>
+  +execute(command : Command) : void
+  +undo(command : Command) : void
+  +getExecutedCount() : int
+}
+
+class GuestAccount <<Receiver>> {
+  -guestName : String
+  -history : List<Operation>
+  +addOperation(op : Operation) : void
+  +getBalance() : double
+  +printBill() : void
+  +printHistory() : void
+}
+
+class Operation <<Record>> {
+  -time : String
+  -department : String
+  -description : String
+  -amount : double
+  +getAmount() : double
+  +toString() : String
+}
+
+class Journal <<Logger>> {
+  -{static} minutes : int
+  +{static} setTime(hour : int, minute : int) : void
+  +{static} now() : String
+  +{static} log(source : String, event : String) : void
+}
+
+Command <|.. ChargeCommand
+ChargeCommand <|-- DinnerCharge
+ChargeCommand <|-- MassageCharge
+ChargeCommand <|-- SkiRentalCharge
+
+BillingService "1" o--> "0..*" Command : executedCommands
+ChargeCommand "0..*" --> "1" GuestAccount : account
+GuestAccount "1" *--> "0..*" Operation : history
+
+ChargeCommand ..> Operation : <<create>>
+ChargeCommand ..> Journal : <<use>>
+
+note right of ChargeCommand
+  execute(): додає Operation зі знаком "+".
+  undo(): НЕ видаляє запис, а додає
+  зворотну Operation зі знаком "-" (сторно).
+end note
+@enduml

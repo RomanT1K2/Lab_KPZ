@@ -1,0 +1,98 @@
+@startuml task1_chain_of_responsibility
+title Завдання 1. Chain of Responsibility: обробка запитів гостя
+skinparam classAttributeIconSize 0
+
+enum RequestType {
+  TOWELS
+  ALARM
+  CLEANING
+  MALFUNCTION
+  COMPLAINT
+  COMPENSATION
+  OTHER
+  --
+  -title : String
+  +getTitle() : String
+}
+
+class GuestRequest <<Request>> {
+  -room : int
+  -type : RequestType
+  -description : String
+  +getRoom() : int
+  +getType() : RequestType
+  +toString() : String
+}
+
+abstract class RequestHandler <<Handler>> {
+  #name : String
+  #next : RequestHandler
+  +setNext(next : RequestHandler) : RequestHandler
+  +handle(request : GuestRequest) : boolean
+  #{abstract} canHandle(request : GuestRequest) : boolean
+  #{abstract} process(request : GuestRequest) : void
+}
+
+class Reception <<ConcreteHandler>> {
+  -nightMode : boolean
+  +Reception(nightMode : boolean)
+  #canHandle(request : GuestRequest) : boolean
+  #process(request : GuestRequest) : void
+}
+class Housekeeping <<ConcreteHandler>> {
+  #canHandle(request : GuestRequest) : boolean
+  #process(request : GuestRequest) : void
+}
+class TechService <<ConcreteHandler>> {
+  #canHandle(request : GuestRequest) : boolean
+  #process(request : GuestRequest) : void
+}
+class DutyManager <<ConcreteHandler>> {
+  #canHandle(request : GuestRequest) : boolean
+  #process(request : GuestRequest) : void
+}
+
+class RequestDesk <<Client>> {
+  -firstHandler : RequestHandler
+  +setChain(first : RequestHandler) : void
+  +submit(request : GuestRequest) : void
+}
+
+class ShiftChains <<Chain builder>> {
+  +{static} dayShift() : RequestHandler
+  +{static} nightShift() : RequestHandler
+}
+
+class Journal <<Logger>> {
+  -{static} minutes : int
+  +{static} setTime(hour : int, minute : int) : void
+  +{static} now() : String
+  +{static} log(source : String, event : String) : void
+}
+
+RequestHandler <|-- Reception
+RequestHandler <|-- Housekeeping
+RequestHandler <|-- TechService
+RequestHandler <|-- DutyManager
+
+RequestHandler "0..1" o--> "0..1" RequestHandler : next
+
+RequestDesk "1" o--> "0..1" RequestHandler : firstHandler
+RequestDesk ..> GuestRequest : <<use>>
+RequestHandler ..> GuestRequest : <<use>>
+GuestRequest "1" --> "1" RequestType : type
+
+ShiftChains ..> Reception : <<create>>
+ShiftChains ..> Housekeeping : <<create>>
+ShiftChains ..> TechService : <<create>>
+ShiftChains ..> DutyManager : <<create>>
+
+RequestHandler ..> Journal : <<use>>
+RequestDesk ..> Journal : <<use>>
+
+note right of RequestHandler
+  Ланка ланцюга: або обробляє запит
+  (canHandle -> process), або передає
+  його далі в next.
+end note
+@enduml
