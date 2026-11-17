@@ -1,0 +1,33 @@
+@startuml
+title Завдання 1 - Decorator (послуги до номера)
+skinparam classAttributeIconSize 0
+interface Room {
+  +getPrice(): int
+  +getDescription(): String
+}
+class StandardRoom {
+  -number: int
+  +getPrice(): int
+  +getDescription(): String
+}
+abstract class RoomDecorator {
+  #room: Room
+  -serviceName: String
+  -extraPrice: int
+  +getPrice(): int
+  +getDescription(): String
+}
+class Breakfast
+class MountainView
+class LateCheckout
+class Parking
+class BabyBed
+Room <|.. StandardRoom
+Room <|.. RoomDecorator
+RoomDecorator o-- Room : обгортає
+RoomDecorator <|-- Breakfast
+RoomDecorator <|-- MountainView
+RoomDecorator <|-- LateCheckout
+RoomDecorator <|-- Parking
+RoomDecorator <|-- BabyBed
+@enduml

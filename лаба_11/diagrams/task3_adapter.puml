@@ -1,0 +1,30 @@
+@startuml
+title Завдання 3 - Adapter (система замків)
+skinparam classAttributeIconSize 0
+interface DoorLock {
+  +programAccess(roomNumber: int, checkOut: LocalDateTime): String
+}
+class LockDesk {
+  -lock: DoorLock
+  +program(room: int, checkOut: LocalDateTime)
+}
+class VendorOneAdapter {
+  -api: VendorOneLockApi
+  +programAccess(roomNumber, checkOut): String
+}
+class VendorTwoAdapter {
+  -api: VendorTwoLockApi
+  +programAccess(roomNumber, checkOut): String
+}
+class VendorOneLockApi <<адаптований>> {
+  +setAccess(floorCode: int, wingCode: char, secondsSince2000: long): int
+}
+class VendorTwoLockApi <<адаптований>> {
+  +grantAccess(roomCode: String, unixSeconds: long): boolean
+}
+LockDesk o-- DoorLock
+DoorLock <|.. VendorOneAdapter
+DoorLock <|.. VendorTwoAdapter
+VendorOneAdapter --> VendorOneLockApi
+VendorTwoAdapter --> VendorTwoLockApi
+@enduml

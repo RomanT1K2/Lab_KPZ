@@ -1,0 +1,42 @@
+@startuml
+title Завдання 4 - Proxy (служба розрахунків)
+skinparam classAttributeIconSize 0
+enum Role {
+  WAITER
+  SPA
+  RENTAL
+  RECEPTION
+  ACCOUNTANT
+}
+class Employee {
+  +name: String
+  +role: Role
+}
+interface BillingService {
+  +charge(e, room, what, amount)
+  +showBill(e, room)
+  +refund(e, room, amount)
+}
+class RealBillingService {
+  -bills: Map
+  +charge(e, room, what, amount)
+  +showBill(e, room)
+  +refund(e, room, amount)
+}
+class BillingProxy {
+  -real: BillingService
+  -auditLog: List<String>
+  +charge(e, room, what, amount)
+  +showBill(e, room)
+  +refund(e, room, amount)
+  -isFinanceStaff(e): boolean
+  -audit(e, action)
+  -deny(e, operation, message)
+  +printAudit()
+}
+BillingService <|.. RealBillingService
+BillingService <|.. BillingProxy
+BillingProxy o-- BillingService : real
+Employee --> Role
+BillingService ..> Employee
+@enduml

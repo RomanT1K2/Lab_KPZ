@@ -1,0 +1,40 @@
+@startuml
+title Завдання 2 - Facade (заселення гостя)
+skinparam classAttributeIconSize 0
+class CheckInFacade {
+  +checkIn(guest: String, bookingId: String)
+}
+class ReceptionDesk {
+  +checkIn(guest: String, bookingId: String)
+}
+class OnlineCheckIn {
+  +checkIn(guest: String, bookingId: String)
+}
+class BookingService {
+  +verify(id): boolean
+}
+class GuestRegistry {
+  +register(guest)
+}
+class RoomAssignment {
+  +assign(id): int
+}
+class KeyCardService {
+  +issue(room, guest)
+  +reissue(room, guest)
+}
+class BillingAccount {
+  +open(guest, room)
+}
+class HousekeepingService {
+  +notifyRoom(room)
+}
+ReceptionDesk --> CheckInFacade
+OnlineCheckIn --> CheckInFacade
+CheckInFacade --> BookingService
+CheckInFacade --> GuestRegistry
+CheckInFacade --> RoomAssignment
+CheckInFacade --> KeyCardService
+CheckInFacade --> BillingAccount
+CheckInFacade --> HousekeepingService
+@enduml
